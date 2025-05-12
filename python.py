@@ -219,36 +219,49 @@ def main():
 
                 console.print(f"[cyan]{header}[/cyan]: {value}")
 
-            action = input("Ist das korrekt? (Enter für Ja, 'e' zum Bearbeiten): ").strip()
+            edit_msg = "Ist das korrekt? (Enter für Ja, 'e' zum Bearbeiten): "
 
-            if action.lower() == "e":
-                console.print("[yellow]Welche Option möchtest du bearbeiten?[/yellow]")
-                print("p: Person")
-                print("r: Raum")
-                option = input("Gebe die Nummer der zu bearbeitenden Option ein: ").strip()
+            action = input(edit_msg).strip()
 
-                if option.lower() == "p":
-                    row[11].value = current_person
-                    console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
+            is_valid_option = False
 
-                    mark_row_as_confirmed(sheet, row[0].row)
-                    save_workbook(wb, excel_file)
-                elif option.lower() == "r":
-                    # TODO: Checken warum man das hier so machen muss
-                    sheet.cell(row=row[0].row, column=10, value=current_room)
-                    console.print(f"[blue]Raum (Spalte J) geändert auf: {current_room}[/blue]")
+            while not is_valid_option:
+                if action.lower() == "e":
+                    is_valid_option = True
 
+                    console.print("[yellow]Welche Option möchtest du bearbeiten?[/yellow]")
+                    print("p: Person")
+                    print("r: Raum")
+                    option = input("Gebe die Nummer der zu bearbeitenden Option ein: ").strip()
+
+                    if option.lower() == "p":
+                        row[11].value = current_person
+                        console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
+
+                        mark_row_as_confirmed(sheet, row[0].row)
+                        save_workbook(wb, excel_file)
+                    elif option.lower() == "r":
+                        # TODO: Checken warum man das hier so machen muss
+                        sheet.cell(row=row[0].row, column=10, value=current_room)
+                        console.print(f"[blue]Raum (Spalte J) geändert auf: {current_room}[/blue]")
+
+                        mark_row_as_confirmed(sheet, row[0].row)
+                        save_workbook(wb, excel_file)
+                    else:
+                        console.print("[red]Ungültige Option![/red]")
+
+                elif action.lower() in ["", "y", "j"]:
+                    is_valid_option = True
+
+                    console.print("[green]Bestätigt. Keine Änderungen.[/green]")
                     mark_row_as_confirmed(sheet, row[0].row)
                     save_workbook(wb, excel_file)
                 else:
-                    console.print("[red]Ungültige Option![/red]")
+                    console.print("[red]Ungültige Eingabe![/red]")
 
-            elif action == "":
-                console.print("[green]Bestätigt. Keine Änderungen.[/green]")
-                mark_row_as_confirmed(sheet, row[0].row)
-                save_workbook(wb, excel_file)
-            else:
-                console.print("[red]Ungültige Eingabe![/red]")
+                    action = input(edit_msg).strip()
+
+                    is_valid_option = False
 
         else:
             item_type = show_item_type_menu()
