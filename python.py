@@ -188,19 +188,19 @@ def main():
             console.print("[red]Name darf nicht leer sein.[/red]")
 
     while True:
-        inv_number = input("Bitte geben Sie die Anlagennummer ein (oder 'q'=Beenden, 'p'=Person ändern, 'r'=Raum ändern): ").strip()
+        anlagennummer_oder_kommando = input("Bitte geben Sie die Anlagennummer ein (oder 'q'=Beenden, 'p'=Person ändern, 'r'=Raum ändern): ").strip()
 
-        if inv_number.lower() == 'q':
+        if anlagennummer_oder_kommando.lower() == 'q':
             console.print("[yellow]Beenden...[/yellow]")
             break
-        if inv_number.lower() == 'p':
+        if anlagennummer_oder_kommando.lower() == 'p':
             current_person = input("Bitte neuen Namen der Person eingeben: ").strip()
             if current_person:
                 console.print(f"[green]Person geändert zu: {current_person}[/green]")
             else:
                 console.print("[red]Name darf nicht leer sein.[/red]")
             continue
-        if inv_number.lower() == 'r':
+        if anlagennummer_oder_kommando.lower() == 'r':
             current_room = input("Neue Raumnummer eingeben: ").strip()
             if current_room:
                 console.print(f"[green]Raumnummer geändert zu: {current_room}[/green]")
@@ -212,7 +212,7 @@ def main():
             console.print("[red]Bitte zuerst eine Person mit 'p' setzen.[/red]")
             continue
 
-        row = find_entry(sheet, inv_number)
+        row = find_entry(sheet, anlagennummer_oder_kommando)
 
         if row:
             headers = [cell.value for cell in sheet[1]]
@@ -273,8 +273,10 @@ def main():
                     console.print("[red]Kein Preis für das angegebene Item gefunden![/red]")
                     continue
 
-            insert_sorted_row(sheet, inv_number, item_type, value, current_room, current_person)
+            insert_sorted_row(sheet, anlagennummer_oder_kommando, item_type, value, current_room, current_person)
             save_workbook(wb, excel_file)
+
+    print("das hier kommt nach der while schleife")
 
 if __name__ == "__main__":
     main()
