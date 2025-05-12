@@ -10,25 +10,18 @@ def dier(msg):
 
 console = Console()
 
-PREDEFINED_ITEM_TYPES = [
-    "Besprechungsstuhl Fiore Vierbeiner weiß/hellgrün mit Klapptisch",
-    "Rollcontainer 9 HE 1-2-3-3 Buche",
-    "Sitz-Steharbeitsplatz 180x80x64-125-Buche",
-    "Drehstuhl AJ5786 schwarz",
-    "Besprechungsstühle Cay Vierbeiner grau/hellgrün"
-]
-
 PRICES = {
     "Besprechungsstuhl Fiore Vierbeiner weiß/hellgrün mit Klapptisch": 241.45,
     "Rollcontainer 9 HE 1-2-3-3 Buche": 185.42,
     "Sitz-Steharbeitsplatz 180x80x64-125-Buche": 487.55,
     "Drehstuhl AJ5786 schwarz": 322.24,
-    "Besprechungsstühle Cay Vierbeiner grau/hellgrün": 168.45
+    "Besprechungsstühle Cay Vierbeiner grau/hellgrün": 168.45,
+    "Lenovo ThinkPad T14 AMD Gen 3": 2152.71
 }
 
-dier(PRICES)
+# TODO: Barcodes für Thinkpads mit einlesen
 
-PREDEFINED_ITEM_TYPES = PRICES.keys()
+PREDEFINED_ITEM_TYPES = list(PRICES.keys())
 
 current_person = ""
 current_room = ""
