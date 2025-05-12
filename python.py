@@ -182,10 +182,10 @@ def main():
         if not current_room:
             console.print("[red]Raumnummer darf nicht leer sein.[/red]")
 
-    current_person = input("Bitte Namen der zugeordneten Person eingeben: ").strip()
-    if not current_person:
-        console.print("[red]Name darf nicht leer sein.[/red]")
-        sys.exit(1)
+    while not current_person:
+        current_person = input("Bitte Namen der zugeordneten Person eingeben: ").strip()
+        if not current_person:
+            console.print("[red]Name darf nicht leer sein.[/red]")
 
     while True:
         inv_number = input("Bitte geben Sie die Anlagennummer ein (oder 'q'=Beenden, 'p'=Person ändern, 'r'=Raum ändern): ").strip()
