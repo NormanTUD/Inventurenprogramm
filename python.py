@@ -127,7 +127,7 @@ def save_workbook(wb, file_name):
 
 
 
-def mark_row_as_confirmed(sheet, row_idx: int):
+def mark_row_as_confirmed(sheet, row_idx):
     # Grüne Farbe im hex Format (Grün ohne Alpha)
     green_fill = PatternFill(
         fill_type="solid",
@@ -138,24 +138,12 @@ def mark_row_as_confirmed(sheet, row_idx: int):
     # Zelle in Spalte A und der Zeile row_idx auswählen
     cell = sheet.cell(row=row_idx, column=1)
 
-    # DEBUG: Vorherige Füllung überprüfen
-    console.print(f"[bold yellow]DEBUG: Vorherige Füllung von Zelle A{row_idx}:[/bold yellow]")
-    console.print(f"  fill_type: {cell.fill.fill_type}")
-    console.print(f"  start_color: {cell.fill.start_color.rgb or cell.fill.start_color.index}")
-    console.print(f"  end_color: {cell.fill.end_color.rgb or cell.fill.end_color.index}")
-
     # Setze die Füllung auf eine transparente Standardfarbe (weiß, ohne Füllung)
     transparent_fill = PatternFill(fill_type="none")
     cell.fill = transparent_fill  # Setzt die Zelle auf Standardfarbe zurück
 
     # Anwenden der grünen Füllung
     cell.fill = green_fill
-
-    # DEBUG: Neue Füllung überprüfen
-    console.print(f"[bold green]DEBUG: Neue Füllung von Zelle A{row_idx}:[/bold green]")
-    console.print(f"  fill_type: {cell.fill.fill_type}")
-    console.print(f"  start_color: {cell.fill.start_color.rgb}")
-    console.print(f"  end_color: {cell.fill.end_color.rgb}")
 
     console.print(f"[green]Zelle A{row_idx} erfolgreich grün überschrieben.[/green]")
 
@@ -247,12 +235,12 @@ def main():
                     row[11].value = current_person
                     console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
                 elif option.lower() == "r":
+                    # TODO: Checken warum man das hier so machen muss
                     sheet.cell(row=row[0].row, column=10, value=current_room)
                     console.print(f"[blue]Raum (Spalte J) geändert auf: {current_room}[/blue]")
                 else:
                     console.print("[red]Ungültige Option![/red]")
 
-                save_workbook(wb, excel_file)
                 mark_row_as_confirmed(sheet, row[0].row)
                 save_workbook(wb, excel_file)
 
