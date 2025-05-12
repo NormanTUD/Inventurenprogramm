@@ -16,7 +16,8 @@ PRICES = {
     "Sitz-Steharbeitsplatz 180x80x64-125-Buche": 487.55,
     "Drehstuhl AJ5786 schwarz": 322.24,
     "Besprechungsstühle Cay Vierbeiner grau/hellgrün": 168.45,
-    "Lenovo ThinkPad T14 AMD Gen 3": 2152.71
+    "Lenovo ThinkPad T14 AMD Gen 3": 2152.71,
+    "Monitor Lenovo ThinkVision T27h-2L": 304.00
 }
 
 # TODO: Barcodes für Thinkpads mit einlesen
