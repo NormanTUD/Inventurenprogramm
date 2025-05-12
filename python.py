@@ -76,7 +76,7 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
     preis = gegenstaende_und_preise[anlagenbezeichnung]["price"]
 
     # Spalten: A = Inventarnummer, E = Bezeichnung, H = Währung, I = Standort, J = Raum, L = Inventurhinweis, M = Kostenstelle
-    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, serial_number, preis, waehrung, gebaeude_id, current_room, None, current_person, kostenstelle]
+    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, serial_number, float(preis), waehrung, gebaeude_id, current_room, None, current_person, kostenstelle]
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
@@ -87,7 +87,7 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
         if int(anlagennummer) < int(cell_anlagennummer):
             sheet.insert_rows(row_idx)
             for col, val in enumerate(new_row, start=1):
-                sheet.cell(row=row_idx, column=col, value=val)
+                cell = sheet.cell(row=row_idx, column=col, value=val)
 
                 if col == 7:
                     cell.number_format = '#,##0.00'
