@@ -21,6 +21,9 @@ PRICES = {
 }
 
 # TODO: Barcodes für Thinkpads mit einlesen
+# Bugs:
+# Fügt die an der falschen Stelle ein und dann grün
+# Man kann den Namen nicht ändern
 
 PREDEFINED_ITEM_TYPES = list(PRICES.keys())
 
