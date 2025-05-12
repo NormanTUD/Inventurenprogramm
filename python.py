@@ -177,10 +177,10 @@ def main():
         console.print(f"[red]Fehler beim Öffnen der Excel-Datei: {e}[/red]")
         sys.exit(1)
 
-    current_room = input("Bitte geben Sie die Raumnummer ein: ").strip()
-    if not current_room:
-        console.print("[red]Raumnummer darf nicht leer sein.[/red]")
-        sys.exit(1)
+    while not current_room:
+        current_room = input("Bitte geben Sie die Raumnummer ein: ").strip()
+        if not current_room:
+            console.print("[red]Raumnummer darf nicht leer sein.[/red]")
 
     current_person = input("Bitte Namen der zugeordneten Person eingeben: ").strip()
     if not current_person:
