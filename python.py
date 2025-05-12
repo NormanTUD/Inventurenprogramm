@@ -227,41 +227,44 @@ def main():
 
             while not is_valid_option:
                 if action.lower() == "e":
-                    is_valid_option = True
-
                     console.print("[yellow]Welche Option möchtest du bearbeiten?[/yellow]")
                     print("p: Person")
                     print("r: Raum")
+                    print("z: Zurück")
                     option = input("Gebe die Nummer der zu bearbeitenden Option ein: ").strip()
 
                     if option.lower() == "p":
                         row[11].value = current_person
                         console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
-
                         mark_row_as_confirmed(sheet, row[0].row)
                         save_workbook(wb, excel_file)
+                        is_valid_option = True
+
                     elif option.lower() == "r":
-                        # TODO: Checken warum man das hier so machen muss
                         sheet.cell(row=row[0].row, column=10, value=current_room)
                         console.print(f"[blue]Raum (Spalte J) geändert auf: {current_room}[/blue]")
-
                         mark_row_as_confirmed(sheet, row[0].row)
                         save_workbook(wb, excel_file)
+                        is_valid_option = True
+
+                    elif option.lower() == "z":
+                        console.print("[green]Ich änder doch nix[/green]")
+                        is_valid_option = True
+
                     else:
-                        console.print("[red]Ungültige Option![/red]")
+                        console.print(f"[red]Ungültige Option! Option: {option}[/red]")
 
                 elif action.lower() in ["", "y", "j"]:
-                    is_valid_option = True
-
                     console.print("[green]Bestätigt. Keine Änderungen.[/green]")
                     mark_row_as_confirmed(sheet, row[0].row)
                     save_workbook(wb, excel_file)
+                    is_valid_option = True
+
                 else:
-                    console.print("[red]Ungültige Eingabe![/red]")
-
+                    console.print(f"[red]Ungültige Eingabe! Eingabe: '{action}'[/red]")
                     action = input(edit_msg).strip()
-
                     is_valid_option = False
+
 
         else:
             item_type = show_item_type_menu()
