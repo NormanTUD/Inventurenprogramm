@@ -31,6 +31,8 @@ gegenstaende_und_preise = {
 PREDEFINED_ITEM_TYPES = list(gegenstaende_und_preise.keys())
 
 gebaeude_id = "3331"
+kostenstelle = "2340200G"
+waehrung = "EUR"
 current_person = ""
 current_room = ""
 
@@ -70,8 +72,10 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
     if gegenstaende_und_preise[anlagenbezeichnung]["serial_number_required"]:
         serial_number = input("Seriennummer: ")
 
+    preis = gegenstaende_und_preise[anlagenbezeichnung]["price"]
+
     # Spalten: A = Inventarnummer, E = Bezeichnung, H = Währung, I = Standort, J = Raum, L = Inventurhinweis, M = Kostenstelle
-    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, serial_number, None, "EUR", gebaeude_id, current_room, None, current_person, "2340200G"]
+    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, serial_number, preis, waehrung, gebaeude_id, current_room, None, current_person, kostenstelle]
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
