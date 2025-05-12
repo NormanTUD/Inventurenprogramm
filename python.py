@@ -46,12 +46,12 @@ def show_item_type_menu():
         console.print("[red]Bitte eine gültige Zahl eingeben![/red]")
         return show_item_type_menu()
 
-def find_entry(sheet, inv_number):
+def find_entry(sheet, anlagennummer):
     for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row):
-        if str(row[0].value).strip() == inv_number:
-            console.print(f"[green]Gefunden: Anlagennummer {inv_number} in Zeile {row[0].row}[/green]")
+        if str(row[0].value).strip() == anlagennummer:
+            console.print(f"[green]Gefunden: Anlagennummer {anlagennummer} in Zeile {row[0].row}[/green]")
             return row
-    console.print(f"[red]Nicht gefunden: Anlagennummer {inv_number}[/red]")
+    console.print(f"[red]Nicht gefunden: Anlagennummer {anlagennummer}[/red]")
     return None
 
 def find_first_matching_entry(sheet, item_type):
@@ -60,7 +60,7 @@ def find_first_matching_entry(sheet, item_type):
             return row
     return None
 
-def insert_sorted_row(sheet, inv_number, item_type, value, room_number, person):
+def insert_sorted_row(sheet, anlagennummer, item_type, value, room_number, person):
     yellow_fill = PatternFill(
         fill_type="solid",
         start_color="FFFF00",  # RGB für Gelb
@@ -68,7 +68,7 @@ def insert_sorted_row(sheet, inv_number, item_type, value, room_number, person):
     )
 
     # Spalten: A = Inventarnummer, E = Bezeichnung, H = Währung, I = Standort, J = Raum, L = Inventurhinweis, M = Kostenstelle
-    new_row = [inv_number, None, None, None, item_type, None, None, "EUR", "3331", room_number, None, person, "2340200G"]
+    new_row = [anlagennummer, None, None, None, item_type, None, None, "EUR", "3331", room_number, None, person, "2340200G"]
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
@@ -76,7 +76,7 @@ def insert_sorted_row(sheet, inv_number, item_type, value, room_number, person):
         if cell_value is None or str(cell_value).strip() == "":
             continue
         try:
-            if int(inv_number) < int(cell_value):
+            if int(anlagennummer) < int(cell_value):
                 sheet.insert_rows(row_idx)
                 for col, val in enumerate(new_row, start=1):
                     sheet.cell(row=row_idx, column=col, value=val)
@@ -115,7 +115,7 @@ def insert_sorted_row(sheet, inv_number, item_type, value, room_number, person):
         for col in range(1, len(new_row) + 1):
             sheet.cell(row=last_row, column=col).fill = green_fill
 
-    console.print(f"[blue]Eintrag: {inv_number}, {item_type}, Wert: {value}, Währung: EUR, "
+    console.print(f"[blue]Eintrag: {anlagennummer}, {item_type}, Wert: {value}, Währung: EUR, "
                   f"Standort: 3331, Raum: {room_number}, Person: {person}[/blue]")
 
 def save_workbook(wb, file_name):
@@ -217,12 +217,22 @@ def main():
         row = find_entry(sheet, anlagennummer_oder_kommando)
 
         if row:
-            headers = [cell.value for cell in sheet[1]]
+            headers = []
+
+            for cell in sheet[1]:
+                headers.append(cell.value)
+
             console.print("Zeile enthält die folgenden Daten:")
 
             for i in range(len(headers)):
-                header = headers[i] if i < len(headers) else f"Spalte {i+1}"
-                value = row[i].value if i < len(row) else ""
+                header = f"Spalte {i + 1}"
+                if i < len(headers):
+                    header = headers[i]
+
+                value = ""
+                if i < len(row):
+                    value = row[i].value
+
                 console.print(f"[cyan]{header}[/cyan]: {value}")
 
             action = input("Ist das korrekt? (Enter für Ja, 'e' zum Bearbeiten): ").strip()
