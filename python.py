@@ -2,6 +2,11 @@ import sys
 import openpyxl
 from rich.console import Console
 from openpyxl.styles import PatternFill
+from pprint import pprint
+
+def dier(msg):
+    pprint(msg)
+    sys.exit(10)
 
 console = Console()
 
@@ -20,6 +25,10 @@ PRICES = {
     "Drehstuhl AJ5786 schwarz": 322.24,
     "Besprechungsstühle Cay Vierbeiner grau/hellgrün": 168.45
 }
+
+dier(PRICES)
+
+PREDEFINED_ITEM_TYPES = PRICES.keys()
 
 current_person = ""
 current_room = ""
