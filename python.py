@@ -192,7 +192,7 @@ def main():
         if current_person:
             ask_for_input = f"Name: {current_person}, {ask_for_input}"
         if current_room:
-            ask_for_input = f"Room: {current_room}, {ask_for_input}"
+            ask_for_input = f"Raum: {current_room}, {ask_for_input}"
 
         anlagennummer_oder_kommando = input(ask_for_input).strip()
 
@@ -212,10 +212,6 @@ def main():
                 console.print(f"[green]Raumnummer geändert zu: {current_room}[/green]")
             else:
                 console.print("[red]Raumnummer darf nicht leer sein.[/red]")
-            continue
-
-        if not current_person:
-            console.print("[red]Bitte zuerst eine Person mit 'p' setzen.[/red]")
             continue
 
         row = find_entry(sheet, anlagennummer_oder_kommando)
