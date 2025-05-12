@@ -2,6 +2,7 @@ import sys
 import openpyxl
 from rich.console import Console
 from openpyxl.styles import PatternFill
+from openpyxl.utils import get_column_letter
 from pprint import pprint
 import os
 import shutil
@@ -79,52 +80,56 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
-        cell_value = sheet.cell(row=row_idx, column=1).value
-        if cell_value is None or str(cell_value).strip() == "":
+        cell_anlagennummer = sheet.cell(row=row_idx, column=1).value
+        if cell_anlagennummer is None or str(cell_anlagennummer).strip() == "":
             continue
-        try:
-            if int(anlagennummer) < int(cell_value):
-                sheet.insert_rows(row_idx)
-                for col, val in enumerate(new_row, start=1):
-                    sheet.cell(row=row_idx, column=col, value=val)
-                sheet.cell(row=row_idx, column=7, value=preis)  # Anschaffungswert in Spalte C
-                inserted = True
-                console.print(f"[blue]Neue Zeile sortiert eingefügt vor Zeile {row_idx}[/blue]")
 
-                # Gelbes Füllmuster anwenden
-                for col in range(1, len(new_row) + 1):
-                    sheet.cell(row=row_idx, column=col).fill = yellow_fill
+        if int(anlagennummer) < int(cell_anlagennummer):
+            sheet.insert_rows(row_idx)
+            for col, val in enumerate(new_row, start=1):
+                sheet.cell(row=row_idx, column=col, value=val)
+            inserted = True
+            console.print(f"[blue]Neue Zeile sortiert eingefügt vor Zeile {row_idx}[/blue]")
 
-                # Einfärben der Zeile in grün (wie im ersten Codebeispiel)
-                for col in range(1, len(new_row) + 1):
-                    sheet.cell(row=row_idx, column=col).fill = yellow_fill
+            # Gelbes Füllmuster anwenden
+            for col in range(1, len(new_row) + 1):
+                sheet.cell(row=row_idx, column=col).fill = yellow_fill
 
-                break
-        except ValueError:
-            continue
+            break
 
     if not inserted:
-        sheet.append(new_row)
-        last_row = sheet.max_row
-        sheet.cell(row=last_row, column=3, value=preis)  # Anschaffungswert in Spalte C
-        console.print(f"[blue]Neue Zeile ans Ende angehängt[/blue]")
+        # Finde die letzte Zeile, in der Spalte A (column=1) ein Wert steht
+        last_data_row = 0
+        for row_idx in range(2, sheet.max_row + 1):
+            cell_anlagennummer = sheet.cell(row=row_idx, column=1).value
+            if cell_anlagennummer is not None and str(cell_anlagennummer).strip() != "":
+                last_data_row = row_idx
+
+        # Neue Zielzeile ist eine Zeile darunter
+        insert_row_index = last_data_row + 1
+
+        # Neue Zeile einfügen
+        sheet.insert_rows(insert_row_index)
+        for col_index, value in enumerate(new_row, start=1):
+            sheet.cell(row=insert_row_index, column=col_index, value=value)
+
+        # Anschaffungswert in Spalte C (Spalte G) setzen
+        try:
+            sheet.cell(row=insert_row_index, column=7, value=preis)
+        except Exception as e:
+            console.print(f"[red]Fehler beim Setzen des Preises: {e}[/red]")
+
+        console.print(f"[blue]Neue Zeile bei Zeile {insert_row_index} eingefügt[/blue]")
 
         # Gelbes Füllmuster anwenden
         for col in range(1, len(new_row) + 1):
-            sheet.cell(row=last_row, column=col).fill = yellow_fill
+            try:
+                sheet.cell(row=insert_row_index, column=col).fill = yellow_fill
+            except Exception as e:
+                console.print(f"[red]Fehler beim Anwenden des gelben Füllmusters in Spalte {col}: {e}[/red]")
 
-        # Einfärben der Zeile in grün (wie im ersten Codebeispiel)
-        green_fill = PatternFill(
-            fill_type="solid",
-            start_color="00FF00",
-            end_color="00FF00"
-        )
-        for col in range(1, len(new_row) + 1):
-            sheet.cell(row=last_row, column=col).fill = green_fill
-
-    console.print(f"[blue]Eintrag: {anlagennummer}, {anlagenbezeichnung}, Wert: {preis}, Währung: EUR, "
-                  f"Standort: 3331, Raum: {current_room}, Person: {current_person}[/blue]")
-
+    console.print(f"[blue]Eintrag: {anlagennummer}, {anlagenbezeichnung}, Wert: {preis}, Währung: {waehrung}, "
+                  f"Standort: {gebaeude_id}, Raum: {current_room}, Person: {current_person}[/blue]")
 
 def get_unique_filename(path):
     """
