@@ -30,10 +30,10 @@ PREDEFINED_ITEM_TYPES = list(PRICES.keys())
 current_person = ""
 current_room = ""
 
-def show_item_type_menu():
+def ask_for_anlagenbezeichnung():
     console.print("[yellow]Gerätetyp auswählen:[/yellow]")
     for idx, name in enumerate(PREDEFINED_ITEM_TYPES, start=1):
-        console.print(f"{idx}: {name}")
+        console.print(f"[underline]{idx}[/underline]: {name}")
     choice = input("Nummer eingeben: ").strip()
     try:
         index = int(choice) - 1
@@ -41,10 +41,10 @@ def show_item_type_menu():
             return PREDEFINED_ITEM_TYPES[index]
         else:
             console.print("[red]Ungültige Auswahl![/red]")
-            return show_item_type_menu()
+            return ask_for_anlagenbezeichnung()
     except ValueError:
         console.print("[red]Bitte eine gültige Zahl eingeben![/red]")
-        return show_item_type_menu()
+        return ask_for_anlagenbezeichnung()
 
 def find_entry(sheet, anlagennummer):
     for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row):
@@ -54,13 +54,13 @@ def find_entry(sheet, anlagennummer):
     console.print(f"[red]Nicht gefunden: Anlagennummer {anlagennummer}[/red]")
     return None
 
-def find_first_matching_entry(sheet, item_type):
+def find_first_matching_entry(sheet, anlagenbezeichnung):
     for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row):
-        if row[4].value == item_type:
+        if row[4].value == anlagenbezeichnung:
             return row
     return None
 
-def insert_sorted_row(sheet, anlagennummer, item_type, value, room_number, person):
+def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, value, room_number, person):
     yellow_fill = PatternFill(
         fill_type="solid",
         start_color="FFFF00",  # RGB für Gelb
@@ -68,7 +68,7 @@ def insert_sorted_row(sheet, anlagennummer, item_type, value, room_number, perso
     )
 
     # Spalten: A = Inventarnummer, E = Bezeichnung, H = Währung, I = Standort, J = Raum, L = Inventurhinweis, M = Kostenstelle
-    new_row = [anlagennummer, None, None, None, item_type, None, None, "EUR", "3331", room_number, None, person, "2340200G"]
+    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, None, None, "EUR", "3331", room_number, None, person, "2340200G"]
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
@@ -115,7 +115,7 @@ def insert_sorted_row(sheet, anlagennummer, item_type, value, room_number, perso
         for col in range(1, len(new_row) + 1):
             sheet.cell(row=last_row, column=col).fill = green_fill
 
-    console.print(f"[blue]Eintrag: {anlagennummer}, {item_type}, Wert: {value}, Währung: EUR, "
+    console.print(f"[blue]Eintrag: {anlagennummer}, {anlagenbezeichnung}, Wert: {value}, Währung: EUR, "
                   f"Standort: 3331, Raum: {room_number}, Person: {person}[/blue]")
 
 def save_workbook(wb, file_name):
@@ -267,20 +267,20 @@ def main():
 
 
         else:
-            item_type = show_item_type_menu()
-            matching_row = find_first_matching_entry(sheet, item_type)
+            anlagenbezeichnung = ask_for_anlagenbezeichnung()
+            matching_row = find_first_matching_entry(sheet, anlagenbezeichnung)
             if matching_row and matching_row[2].value:
                 value = matching_row[2].value
-                console.print(f"[green]Gefundene Werte: {item_type} → Wert={value}, Währung=EUR[/green]")
+                console.print(f"[green]Gefundene Werte: {anlagenbezeichnung} → Wert={value}, Währung=EUR[/green]")
             else:
-                if item_type in PRICES:
-                    value = PRICES[item_type]
-                    console.print(f"[green]Gefundener Wert für {item_type}: {value} EUR[/green]")
+                if anlagenbezeichnung in PRICES:
+                    value = PRICES[anlagenbezeichnung]
+                    console.print(f"[green]Gefundener Wert für {anlagenbezeichnung}: {value} EUR[/green]")
                 else:
                     console.print("[red]Kein Preis für das angegebene Item gefunden![/red]")
                     continue
 
-            insert_sorted_row(sheet, anlagennummer_oder_kommando, item_type, value, current_room, current_person)
+            insert_sorted_row(sheet, anlagennummer_oder_kommando, anlagenbezeichnung, value, current_room, current_person)
             save_workbook(wb, excel_file)
 
     print("das hier kommt nach der while schleife")
