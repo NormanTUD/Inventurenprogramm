@@ -283,5 +283,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except KeyboardInterrupt:
-        print("\nDu hast das programm beendet")
+    except (EOFError, KeyboardInterrupt):
+        console.print("\n[yellow]Du hast das Programm beendet[/yellow]")
