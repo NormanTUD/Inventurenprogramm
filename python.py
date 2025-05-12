@@ -138,10 +138,6 @@ def mark_row_as_confirmed(sheet, row_idx):
     # Zelle in Spalte A und der Zeile row_idx auswählen
     cell = sheet.cell(row=row_idx, column=1)
 
-    # Setze die Füllung auf eine transparente Standardfarbe (weiß, ohne Füllung)
-    transparent_fill = PatternFill(fill_type="none")
-    cell.fill = transparent_fill  # Setzt die Zelle auf Standardfarbe zurück
-
     # Anwenden der grünen Füllung
     cell.fill = green_fill
 
@@ -234,15 +230,18 @@ def main():
                 if option.lower() == "p":
                     row[11].value = current_person
                     console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
+
+                    mark_row_as_confirmed(sheet, row[0].row)
+                    save_workbook(wb, excel_file)
                 elif option.lower() == "r":
                     # TODO: Checken warum man das hier so machen muss
                     sheet.cell(row=row[0].row, column=10, value=current_room)
                     console.print(f"[blue]Raum (Spalte J) geändert auf: {current_room}[/blue]")
+
+                    mark_row_as_confirmed(sheet, row[0].row)
+                    save_workbook(wb, excel_file)
                 else:
                     console.print("[red]Ungültige Option![/red]")
-
-                mark_row_as_confirmed(sheet, row[0].row)
-                save_workbook(wb, excel_file)
 
             elif action == "":
                 console.print("[green]Bestätigt. Keine Änderungen.[/green]")
