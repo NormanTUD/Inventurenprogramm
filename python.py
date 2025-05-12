@@ -88,12 +88,18 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
             sheet.insert_rows(row_idx)
             for col, val in enumerate(new_row, start=1):
                 sheet.cell(row=row_idx, column=col, value=val)
+
+                if col == 7:
+                    cell.number_format = '#,##0.00'
             inserted = True
             console.print(f"[blue]Neue Zeile sortiert eingefügt vor Zeile {row_idx}[/blue]")
 
             # Gelbes Füllmuster anwenden
             for col in range(1, len(new_row) + 1):
-                sheet.cell(row=row_idx, column=col).fill = yellow_fill
+                cell = sheet.cell(row=row_idx, column=col).fill = yellow_fill
+
+                if col == 7:
+                    cell.number_format = '#,##0.00'
 
             break
 
@@ -115,7 +121,8 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
 
         # Anschaffungswert in Spalte C (Spalte G) setzen
         try:
-            sheet.cell(row=insert_row_index, column=7, value=preis)
+            cell = sheet.cell(row=insert_row_index, column=7, value=preis)
+            cell.number_format = '#,##0.00'
         except Exception as e:
             console.print(f"[red]Fehler beim Setzen des Preises: {e}[/red]")
 
