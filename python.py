@@ -14,13 +14,13 @@ def dier(msg):
 console = Console()
 
 gegenstaende_und_preise = {
-    "Besprechungsstuhl Fiore Vierbeiner weiß/hellgrün mit Klapptisch": 241.45,
-    "Rollcontainer 9 HE 1-2-3-3 Buche": 185.42,
-    "Sitz-Steharbeitsplatz 180x80x64-125-Buche": 487.55,
-    "Drehstuhl AJ5786 schwarz": 322.24,
-    "Besprechungsstühle Cay Vierbeiner grau/hellgrün": 168.45,
-    "Lenovo ThinkPad T14 AMD Gen 3": 2152.71,
-    "Monitor Lenovo ThinkVision T27h-2L": 304.00
+    "Besprechungsstuhl Fiore Vierbeiner weiß/hellgrün mit Klapptisch": { "price": 241.45, "serial_number_required": False },
+    "Rollcontainer 9 HE 1-2-3-3 Buche": {"price": 185.42, "serial_number_required": False },
+    "Sitz-Steharbeitsplatz 180x80x64-125-Buche": { "price": 487.55, "serial_number_required": False },
+    "Drehstuhl AJ5786 schwarz": { "price": 322.24, "serial_number_required": False },
+    "Besprechungsstühle Cay Vierbeiner grau/hellgrün": { "price": 168.45, "serial_number_required": False },
+    "Lenovo ThinkPad T14 AMD Gen 3": { "price": 2152.71, "serial_number_required": True },
+    "Monitor Lenovo ThinkVision T27h-2L": { "price": 304.00, "serial_number_required": False }
 }
 
 # TODO: Barcodes für Thinkpads mit einlesen
@@ -30,6 +30,7 @@ gegenstaende_und_preise = {
 
 PREDEFINED_ITEM_TYPES = list(gegenstaende_und_preise.keys())
 
+gebaeude_id = "3331"
 current_person = ""
 current_room = ""
 
@@ -64,8 +65,13 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
         end_color="FFFF00"
     )
 
+    serial_number = None
+
+    if gegenstaende_und_preise[anlagenbezeichnung]["serial_number_required"]:
+        serial_number = input("Seriennummer: ")
+
     # Spalten: A = Inventarnummer, E = Bezeichnung, H = Währung, I = Standort, J = Raum, L = Inventurhinweis, M = Kostenstelle
-    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, None, None, "EUR", "3331", current_room, None, current_person, "2340200G"]
+    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, serial_number, None, "EUR", gebaeude_id, current_room, None, current_person, "2340200G"]
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
@@ -261,12 +267,22 @@ def main():
                     console.print("[yellow]Welche Option möchtest du bearbeiten?[/yellow]")
                     print("p: Person")
                     print("r: Raum")
+                    print("s: Seriennummer")
                     print("z: Zurück")
                     option = input("Gebe die Nummer der zu bearbeitenden Option ein: ").strip()
 
                     if option.lower() == "p":
                         row[11].value = current_person
                         console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
+                        mark_row_as_confirmed(sheet, row[0].row)
+                        save_workbook(wb, excel_file)
+                        is_valid_option = True
+
+                    elif option.lower() == "s":
+                        serial_number = input("Seriennummer: ")
+
+                        sheet.cell(row=row[0].row, column=6, value=serial_number)
+                        console.print(f"[blue]Seriennummer (Spalte F) geändert auf: {serial_number}[/blue]")
                         mark_row_as_confirmed(sheet, row[0].row)
                         save_workbook(wb, excel_file)
                         is_valid_option = True
@@ -300,7 +316,7 @@ def main():
         else:
             anlagenbezeichnung = ask_for_anlagenbezeichnung()
 
-            preis = gegenstaende_und_preise[anlagenbezeichnung]
+            preis = gegenstaende_und_preise[anlagenbezeichnung]["price"]
 
             insert_sorted_row(sheet, anlagennummer_oder_kommando, anlagenbezeichnung, preis)
             save_workbook(wb, excel_file)
