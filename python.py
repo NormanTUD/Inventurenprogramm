@@ -20,7 +20,7 @@ gegenstaende_und_preise = {
     "Drehstuhl AJ5786 schwarz": { "price": 322.24, "serial_number_required": False },
     "Besprechungsstühle Cay Vierbeiner grau/hellgrün": { "price": 168.45, "serial_number_required": False },
     "Lenovo ThinkPad T14 AMD Gen 3": { "price": 2152.71, "serial_number_required": True },
-    "Monitor Lenovo ThinkVision T27h-2L": { "price": 304.00, "serial_number_required": False }
+    "Monitor Lenovo ThinkVision T27h-2L": { "price": 304.00, "serial_number_required": True }
 }
 
 # TODO: Barcodes für Thinkpads mit einlesen
