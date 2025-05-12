@@ -3,6 +3,9 @@ import openpyxl
 from rich.console import Console
 from openpyxl.styles import PatternFill
 from pprint import pprint
+import os
+import shutil
+from datetime import datetime
 
 def dier(msg):
     pprint(msg)
@@ -10,7 +13,7 @@ def dier(msg):
 
 console = Console()
 
-PRICES = {
+gegenstaende_und_preise = {
     "Besprechungsstuhl Fiore Vierbeiner weiß/hellgrün mit Klapptisch": 241.45,
     "Rollcontainer 9 HE 1-2-3-3 Buche": 185.42,
     "Sitz-Steharbeitsplatz 180x80x64-125-Buche": 487.55,
@@ -25,7 +28,7 @@ PRICES = {
 # Fügt die an der falschen Stelle ein und dann grün
 # Man kann den Namen nicht ändern
 
-PREDEFINED_ITEM_TYPES = list(PRICES.keys())
+PREDEFINED_ITEM_TYPES = list(gegenstaende_und_preise.keys())
 
 current_person = ""
 current_room = ""
@@ -54,13 +57,7 @@ def find_entry(sheet, anlagennummer):
     console.print(f"[red]Nicht gefunden: Anlagennummer {anlagennummer}[/red]")
     return None
 
-def find_first_matching_entry(sheet, anlagenbezeichnung):
-    for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row):
-        if row[4].value == anlagenbezeichnung:
-            return row
-    return None
-
-def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, value, room_number, person):
+def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, preis):
     yellow_fill = PatternFill(
         fill_type="solid",
         start_color="FFFF00",  # RGB für Gelb
@@ -68,7 +65,7 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, value, room_numb
     )
 
     # Spalten: A = Inventarnummer, E = Bezeichnung, H = Währung, I = Standort, J = Raum, L = Inventurhinweis, M = Kostenstelle
-    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, None, None, "EUR", "3331", room_number, None, person, "2340200G"]
+    new_row = [anlagennummer, None, None, None, anlagenbezeichnung, None, None, "EUR", "3331", current_room, None, current_person, "2340200G"]
     inserted = False
 
     for row_idx in range(2, sheet.max_row + 1):
@@ -80,7 +77,7 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, value, room_numb
                 sheet.insert_rows(row_idx)
                 for col, val in enumerate(new_row, start=1):
                     sheet.cell(row=row_idx, column=col, value=val)
-                sheet.cell(row=row_idx, column=7, value=value)  # Anschaffungswert in Spalte C
+                sheet.cell(row=row_idx, column=7, value=preis)  # Anschaffungswert in Spalte C
                 inserted = True
                 console.print(f"[blue]Neue Zeile sortiert eingefügt vor Zeile {row_idx}[/blue]")
 
@@ -99,7 +96,7 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, value, room_numb
     if not inserted:
         sheet.append(new_row)
         last_row = sheet.max_row
-        sheet.cell(row=last_row, column=3, value=value)  # Anschaffungswert in Spalte C
+        sheet.cell(row=last_row, column=3, value=preis)  # Anschaffungswert in Spalte C
         console.print(f"[blue]Neue Zeile ans Ende angehängt[/blue]")
 
         # Gelbes Füllmuster anwenden
@@ -115,17 +112,51 @@ def insert_sorted_row(sheet, anlagennummer, anlagenbezeichnung, value, room_numb
         for col in range(1, len(new_row) + 1):
             sheet.cell(row=last_row, column=col).fill = green_fill
 
-    console.print(f"[blue]Eintrag: {anlagennummer}, {anlagenbezeichnung}, Wert: {value}, Währung: EUR, "
-                  f"Standort: 3331, Raum: {room_number}, Person: {person}[/blue]")
+    console.print(f"[blue]Eintrag: {anlagennummer}, {anlagenbezeichnung}, Wert: {preis}, Währung: EUR, "
+                  f"Standort: 3331, Raum: {current_room}, Person: {current_person}[/blue]")
+
+
+def get_unique_filename(path):
+    """
+    Wenn die Datei 'path' existiert, wird ein neuer Name mit -1, -2 usw. generiert.
+    """
+    directory, original_filename = os.path.split(path)
+    name, ext = os.path.splitext(original_filename)
+    counter = 1
+    new_path = path
+
+    while os.path.exists(new_path):
+        new_filename = f"{name}-{counter}{ext}"
+        new_path = os.path.join(directory, new_filename)
+        counter += 1
+
+    return new_path
 
 def save_workbook(wb, file_name):
     try:
+        # Backup-Verzeichnis erstellen
+        backup_dir = os.path.join(os.getcwd(), "python_script_backups", datetime.today().strftime('%Y-%m-%d'))
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+
+        # Backup der bestehenden Datei (wenn sie existiert)
+        if os.path.isfile(file_name):
+            base_name = os.path.basename(file_name)
+            backup_path = os.path.join(backup_dir, base_name)
+            unique_backup_path = get_unique_filename(backup_path)
+
+            try:
+                shutil.copy2(file_name, unique_backup_path)
+                console.print(f"[yellow]Backup gespeichert unter: {unique_backup_path}[/yellow]")
+            except Exception as e:
+                console.print(f"[red]Fehler beim Erstellen des Backups: {e}[/red]")
+
+        # Arbeitsmappe speichern
         wb.save(file_name)
         console.print(f"[green]Änderungen erfolgreich gespeichert in {file_name}[/green]")
+
     except Exception as e:
         console.print(f"[red]Fehler beim Speichern der Datei: {e}[/red]")
-
-
 
 def mark_row_as_confirmed(sheet, row_idx):
     # Grüne Farbe im hex Format (Grün ohne Alpha)
@@ -268,22 +299,11 @@ def main():
 
         else:
             anlagenbezeichnung = ask_for_anlagenbezeichnung()
-            matching_row = find_first_matching_entry(sheet, anlagenbezeichnung)
-            if matching_row and matching_row[2].value:
-                value = matching_row[2].value
-                console.print(f"[green]Gefundene Werte: {anlagenbezeichnung} → Wert={value}, Währung=EUR[/green]")
-            else:
-                if anlagenbezeichnung in PRICES:
-                    value = PRICES[anlagenbezeichnung]
-                    console.print(f"[green]Gefundener Wert für {anlagenbezeichnung}: {value} EUR[/green]")
-                else:
-                    console.print("[red]Kein Preis für das angegebene Item gefunden![/red]")
-                    continue
 
-            insert_sorted_row(sheet, anlagennummer_oder_kommando, anlagenbezeichnung, value, current_room, current_person)
+            preis = gegenstaende_und_preise[anlagenbezeichnung]
+
+            insert_sorted_row(sheet, anlagennummer_oder_kommando, anlagenbezeichnung, preis)
             save_workbook(wb, excel_file)
-
-    print("das hier kommt nach der while schleife")
 
 if __name__ == "__main__":
     try:
