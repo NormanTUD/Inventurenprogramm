@@ -188,7 +188,13 @@ def main():
             console.print("[red]Name darf nicht leer sein.[/red]")
 
     while True:
-        anlagennummer_oder_kommando = input("Bitte geben Sie die Anlagennummer ein (oder 'q'=Beenden, 'p'=Person ändern, 'r'=Raum ändern): ").strip()
+        ask_for_input = "Bitte geben Sie die Anlagennummer ein (oder 'q'=Beenden, 'p'=Person ändern, 'r'=Raum ändern): "
+        if current_person:
+            ask_for_input = f"Name: {current_person}, {ask_for_input}"
+        if current_room:
+            ask_for_input = f"Room: {current_room}, {ask_for_input}"
+
+        anlagennummer_oder_kommando = input(ask_for_input).strip()
 
         if anlagennummer_oder_kommando.lower() == 'q':
             console.print("[yellow]Beenden...[/yellow]")
@@ -279,4 +285,7 @@ def main():
     print("das hier kommt nach der while schleife")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nDu hast das programm beendet")
