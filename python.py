@@ -237,24 +237,16 @@ def main():
 
             action = input("Ist das korrekt? (Enter für Ja, 'e' zum Bearbeiten): ").strip()
 
-            if action == "e":
-                console.print("[yellow]Welche Option möchten Sie bearbeiten?[/yellow]")
-                print("1: Anschaffungswert")
-                print("2: Raum")
-                option = input("Geben Sie die Nummer der zu bearbeitenden Option ein: ").strip()
+            if action.lower() == "e":
+                console.print("[yellow]Welche Option möchtest du bearbeiten?[/yellow]")
+                print("p: Person")
+                print("r: Raum")
+                option = input("Gebe die Nummer der zu bearbeitenden Option ein: ").strip()
 
-                if option == "1":
-                    item_type = row[1].value
-                    if item_type in PRICES:
-                        new_value = PRICES[item_type]
-                        row[2].value = new_value
-                        console.print(f"[blue]Anschaffungswert geändert auf: {new_value}[/blue]")
-                    else:
-                        console.print(f"[red]Kein Preis für {item_type} gefunden.[/red]")
-                elif option == "2":
-                    new_room = input(f"Aktueller Raum: {current_room}. Neue Raumnummer eingeben (Enter für aktuellen Raum): ").strip()
-                    if new_room:
-                        current_room = new_room
+                if option.lower() == "p":
+                    row[11].value = current_person
+                    console.print(f"[blue]Person geändert auf: {current_person}[/blue]")
+                elif option.lower() == "r":
                     sheet.cell(row=row[0].row, column=10, value=current_room)
                     console.print(f"[blue]Raum (Spalte J) geändert auf: {current_room}[/blue]")
                 else:
