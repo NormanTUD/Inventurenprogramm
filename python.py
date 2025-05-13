@@ -41,7 +41,14 @@ def ask_for_anlagenbezeichnung():
     console.print("[yellow]Gerätetyp auswählen:[/yellow]")
     for idx, name in enumerate(PREDEFINED_ITEM_TYPES, start=1):
         console.print(f"[underline]{idx}[/underline]: {name}")
+
+    console.print(f"[underline]z[/underline]: Zurück")
+
     choice = input("Nummer eingeben: ").strip()
+
+    if choice.strip().lower() == "z":
+        return "z"
+
     try:
         index = int(choice) - 1
         if 0 <= index < len(PREDEFINED_ITEM_TYPES):
@@ -333,10 +340,13 @@ def main():
         else:
             anlagenbezeichnung = ask_for_anlagenbezeichnung()
 
-            preis = gegenstaende_und_preise[anlagenbezeichnung]["price"]
+            if anlagenbezeichnung == "z":
+                console.print("[yellow]Zurück[/yellow]")
+            else:
+                preis = gegenstaende_und_preise[anlagenbezeichnung]["price"]
 
-            insert_sorted_row(sheet, anlagennummer_oder_kommando, anlagenbezeichnung, preis)
-            save_workbook(wb, excel_file)
+                insert_sorted_row(sheet, anlagennummer_oder_kommando, anlagenbezeichnung, preis)
+                save_workbook(wb, excel_file)
 
 if __name__ == "__main__":
     try:
