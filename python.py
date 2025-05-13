@@ -38,27 +38,26 @@ current_person = ""
 current_room = ""
 
 def ask_for_anlagenbezeichnung():
-    console.print("[yellow]Gerätetyp auswählen:[/yellow]")
-    for idx, name in enumerate(PREDEFINED_ITEM_TYPES, start=1):
-        console.print(f"[underline]{idx}[/underline]: {name}")
+    while True:  # Schleife, die so lange läuft, bis eine gültige Eingabe erfolgt
+        console.print("[yellow]Gerätetyp auswählen:[/yellow]")
+        for idx, name in enumerate(PREDEFINED_ITEM_TYPES, start=1):
+            console.print(f"[underline]{idx}[/underline]: {name}")
 
-    console.print(f"[underline]z[/underline]: Zurück")
+        console.print(f"[underline]z[/underline]: Zurück")
 
-    choice = input("Nummer eingeben: ").strip()
+        choice = input("Nummer eingeben: ").strip()
 
-    if choice.strip().lower() == "z":
-        return "z"
+        if choice.strip().lower() == "z":
+            return "z"
 
-    try:
-        index = int(choice) - 1
-        if 0 <= index < len(PREDEFINED_ITEM_TYPES):
-            return PREDEFINED_ITEM_TYPES[index]
-        else:
-            console.print("[red]Ungültige Auswahl![/red]")
-            return ask_for_anlagenbezeichnung()
-    except ValueError:
-        console.print("[red]Bitte eine gültige Zahl eingeben![/red]")
-        return ask_for_anlagenbezeichnung()
+        try:
+            index = int(choice) - 1
+            if 0 <= index < len(PREDEFINED_ITEM_TYPES):
+                return PREDEFINED_ITEM_TYPES[index]
+            else:
+                console.print("[red]Ungültige Auswahl![/red]")
+        except ValueError:
+            console.print("[red]Bitte eine gültige Zahl eingeben![/red]")
 
 def find_entry(sheet, anlagennummer):
     for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row):
