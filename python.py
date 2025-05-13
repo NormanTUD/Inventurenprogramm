@@ -270,7 +270,8 @@ def main():
                 if i < len(row):
                     value = row[i].value
 
-                console.print(f"[cyan]{header}[/cyan]: {value}")
+                if header:
+                    console.print(f"[cyan]{header}[/cyan]: {value}")
 
             edit_msg = "Ist das korrekt? (Enter für Ja, 'e' zum Bearbeiten): "
 
